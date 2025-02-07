@@ -44,5 +44,14 @@ def add_post():
         return jsonify(POSTS)
 
 
+@app.route('/api/posts/<int:post_id>', methods=['DELETE'])
+def delete_post(post_id):
+    post = find_post_by_id(post_id)
+    if post is None:
+        return jsonify({"error": "The post with the given id was not found"}), 404
+    del post
+    return jsonify({"message": f"Post with id {post_id} has been deleted successfully."}), 200
+
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5002, debug=True)
