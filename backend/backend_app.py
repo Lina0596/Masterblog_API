@@ -1,5 +1,3 @@
-from crypt import methods
-
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
@@ -13,12 +11,20 @@ POSTS = [
 
 
 def validate_post_data(data):
+    """
+    Validates if title or content data is in a post request.
+    Returns True if the data is in the request and False if not.
+    """
     if "title" not in data or "content" not in data:
         return False
     return True
 
 
 def find_post_by_id(post_id):
+    """
+    Checks if the given id in a get request matches with the id of a post in the database.
+    Returns the post with the matching id or None if there is no matching post.
+    """
     for i in range(len(POSTS)):
         if post_id == POSTS[i]["id"]:
             post = POSTS[i]
