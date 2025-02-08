@@ -1,3 +1,5 @@
+from crypt import methods
+
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
@@ -61,6 +63,25 @@ def update_post(post_id):
     new_post_data = request.get_json()
     post.update(new_post_data)
     return jsonify(post), 200
+
+
+@app.route('/api/posts/search', methods=['GET'])
+def search_post():
+    title = request.args.get("title")
+    content = request.args.get("content")
+    filtered_posts = []
+    if title:
+        for post in POSTS:
+            if title.lower() in post.get("title").lower():
+                filtered_posts.append(post)
+        return jsonify(filtered_posts)
+    elif content:
+        for post in POSTS:
+            if content.lower() in post.get("content").lower():
+                filtered_posts.append(post)
+        return jsonify(filtered_posts)
+    else:
+        return jsonify(filtered_posts)
 
 
 if __name__ == '__main__':
