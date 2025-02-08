@@ -28,7 +28,25 @@ def find_post_by_id(post_id):
 
 @app.route('/api/posts', methods=['GET'])
 def get_posts():
-    return jsonify(POSTS)
+    sort = request.args.get("sort")
+    direction = request.args.get("direction")
+    if sort == "" and direction == "" or not sort and not direction:
+        POSTS.sort(key=lambda post: post["id"])
+        return jsonify(POSTS)
+    elif sort == "title" and direction == "asc":
+        POSTS.sort(key= lambda post: post["title"])
+        return jsonify(POSTS)
+    elif sort == "title" and direction == "desc":
+        POSTS.sort(key= lambda post: post["title"], reverse=True)
+        return jsonify(POSTS)
+    elif sort == "content" and direction == "asc":
+        POSTS.sort(key= lambda post: post["content"])
+        return jsonify(POSTS)
+    elif sort == "content" and direction == "desc":
+        POSTS.sort(key=lambda post: post["content"], reverse=True)
+        return jsonify(POSTS)
+    else:
+        return jsonify({"error": "Invalid data for sort or direction"}), 400
 
 
 @app.route('/api/posts', methods=['GET', 'POST'])
