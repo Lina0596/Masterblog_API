@@ -22,18 +22,28 @@ def validate_post_data(data):
 
 def find_post_by_id(post_id):
     """
-    Checks if the given id in a get request matches with the id of a post in the database.
-    Returns the post with the matching id or None if there is no matching post.
+    Checks if the given id in a get request matches
+    with the id of a post in the database.
+    Returns the post with the matching id or None
+    if there is no matching post.
     """
     for i in range(len(POSTS)):
         if post_id == POSTS[i]["id"]:
-            post = POSTS[i]
-            return post
+            post_index = i
+            return post_index
     return None
+
+print(find_post_by_id(2))
 
 
 @app.route('/api/posts', methods=['GET'])
 def get_posts():
+    """
+    Gets all posts and returns it as json.
+    The sort parameter sorts the posts by title or by content.
+    The direction parameter sorts the posts in ascending or descending order.
+    Returns an error message if the given parameters are invalid.
+    """
     sort = request.args.get("sort")
     direction = request.args.get("direction")
     if sort == "" and direction == "" or not sort and not direction:
@@ -57,6 +67,11 @@ def get_posts():
 
 @app.route('/api/posts', methods=['GET', 'POST'])
 def add_post():
+    """
+    Gets and validates the new data with a POST method.
+    If the data is valid, generates a unique id and
+    appends the data and returns it as json.
+    """
     if request.method == 'POST':
         new_post = request.get_json()
         if not validate_post_data(new_post):
@@ -72,17 +87,29 @@ def add_post():
 
 @app.route('/api/posts/<int:post_id>', methods=['DELETE'])
 def delete_post(post_id):
-    post = find_post_by_id(post_id)
-    if post is None:
+    """
+    Deletes the post with the given index.
+    Returns an error message if the post
+    with the given index was not found.
+    """
+    post_index = find_post_by_id(post_id)
+    if post_index is None:
         return jsonify({"error": "The post with the given id was not found"}), 404
-    del post
+    del POSTS[post_index]
     return jsonify({"message": f"Post with id {post_id} has been deleted successfully."}), 200
 
 
 @app.route('/api/posts/<int:post_id>', methods=['PUT'])
 def update_post(post_id):
-    post = find_post_by_id(post_id)
-    if post is None:
+    """
+    Updates the given data of the post
+    with the given index and returns it as json
+    Returns an error message if the post with
+    the given index was not found.
+    """
+    post_index = find_post_by_id(post_id)
+    post = POSTS[post_index]
+    if post_index is None:
         return jsonify({"error": "The post with the given id was not found"}), 404
     new_post_data = request.get_json()
     post.update(new_post_data)
@@ -91,6 +118,12 @@ def update_post(post_id):
 
 @app.route('/api/posts/search', methods=['GET'])
 def search_post():
+    """
+    Searches posts by the given title or
+    content and returns it as json.
+    Returns an empty list if the given data doesn't
+    match with any post.
+    """
     title = request.args.get("title")
     content = request.args.get("content")
     filtered_posts = []
