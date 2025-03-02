@@ -108,9 +108,9 @@ def update_post(post_id):
     the given index was not found.
     """
     post_index = find_post_by_id(post_id)
-    post = POSTS[post_index]
     if post_index is None:
         return jsonify({"error": "The post with the given id was not found"}), 404
+    post = POSTS[post_index]
     new_post_data = request.get_json()
     post.update(new_post_data)
     return jsonify(post), 200
